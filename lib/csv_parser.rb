@@ -4,10 +4,24 @@ require 'csv'
 class CSVParser
 
     def parse(file ="spec/fixtures/single_line.csv" )
-        handle = CSV.foreach(file, {:headers => true, header_converters: :symbol}) #, encoding: 'iso-8859-1:utf-8'})
-        handle.each do |row|
-            puts(row.inspect)
-            puts(row[:zip])
+
+        CSV.open("cleaned_file.csv", "w") do |csv|
+            csv << ["Timestamp", "Address", "ZIP", "FullName",
+                "FooDuration", "BarDuration", "TotalDuration" ,"Notes"] # headers
+
+            handle = CSV.foreach(file, {:headers => true, header_converters: :symbol, encoding: 'iso-8859-1'})
+            handle.each do |row|
+                row[:timestamp] = convert_time(row[:timestamp]).scrub
+                row[:address] = row[:address].scrub # working?
+                row[:zip] = format_zip(row[:zip]).scrub
+                row[:fullname] = upcase_name(row[:fullname]).scrub
+                row[:fooduration] = calc_duration(row[:fooduration])
+                row[:barduration] = calc_duration(row[:barduration])
+                row[:totalduration] = row[:fooduration] + row[:barduration]
+                row[:notes] = row[:notes].scrub if row[:notes]
+
+                csv.puts(row)
+            end
         end
     end
 
@@ -36,6 +50,14 @@ class CSVParser
     def upcase_name(name_string)
         name_string.upcase
     end
+
+    def calc_duration(duration_string)
+        duration_nums = duration_string.split(":")
+        hours_to_seconds = duration_nums[0].to_i * 60 * 60
+        minutes_to_seconds = duration_nums[1].to_i * 60
+        seconds = duration_nums[2].to_f
+        hours_to_seconds + minutes_to_seconds + seconds
+    end
 end
 
 
@@ -43,4 +65,4 @@ end
 
 # runner
 csv_parser = CSVParser.new
-csv_parser.parse("spec/fixtures/sample.csv")
+csv_parser.parse("spec/fixtures/sample-with-broken-utf8.csv")

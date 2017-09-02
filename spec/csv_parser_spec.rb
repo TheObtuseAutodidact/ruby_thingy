@@ -18,7 +18,6 @@ describe CSVParser do
 
     end
 
-    
     skip "should log an error if it fails to parse date" do
         p = CSVParser.new
         expect(p.convert_time()).to eq(nil);
@@ -36,6 +35,17 @@ describe CSVParser do
         p = CSVParser.new
         expect(p.upcase_name("lenny")).to eq("LENNY")
         expect(p.upcase_name("株式会社スタジオジブリ")).to eq("株式会社スタジオジブリ")
+    end
+
+
+    it "should calculate duration in seconds and milliseconds" do
+        p = CSVParser.new
+        expect(p.calc_duration("01:01:01.001")).to eq(3661.001)
+    end
+
+    it "should allow for addition of two durations" do
+        p = CSVParser.new
+        expect(p.calc_duration("01:01:01.001") + p.calc_duration("01:01:01.001")).to eq(7322.002)
     end
 
 end
