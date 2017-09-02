@@ -50,5 +50,5 @@ From inside of ruby_thingy directory
 $ ruby lib/ruby_thing.rb <path/to/your/csv/file>
 ```
 This will generate `cleaned_file.csv` and drop it into the
-ruby_thingy directory. The file will over written on subsequent runs of the program.
+ruby_thingy directory. The file will be over written on subsequent runs of the program.
 
