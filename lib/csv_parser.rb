@@ -1,9 +1,8 @@
 require 'csv'
 
-
 class CSVParser
 
-    def parse(file ="spec/fixtures/single_line.csv" )
+    def parse(file = "spec/fixtures/sample.csv" )
 
         CSV.open("cleaned_file.csv", "w") do |csv|
             csv << ["Timestamp", "Address", "ZIP", "FullName",
@@ -12,7 +11,7 @@ class CSVParser
             handle = CSV.foreach(file, {:headers => true, header_converters: :symbol, encoding: 'iso-8859-1'})
             handle.each do |row|
                 row[:timestamp] = convert_time(row[:timestamp]).scrub
-                row[:address] = row[:address].scrub # working?
+                row[:address] = row[:address].scrub
                 row[:zip] = format_zip(row[:zip]).scrub
                 row[:fullname] = upcase_name(row[:fullname]).scrub
                 row[:fooduration] = calc_duration(row[:fooduration])
@@ -27,13 +26,13 @@ class CSVParser
 
     def convert_time(time_string="") # default argument protects form wrong num of arguments error
         # assume all dates are 20XX; compensate for two digit dates by adding 2000 years
-        # strptime didn't like "/"
+        # strptime() didn't like "/"
         time_string.gsub!("/","-")
         begin
             (DateTime.strptime(time_string, '%m-%d-%Y %l:%M:%S').next_year(2000) - (3.0/24.0)).iso8601()
         rescue ArgumentError => e 
-            # TODO: Log error
-            puts("TODO: log (#{e}) to STDERR and do not record row")
+            # TODO: Log error and do not record row
+            "xx/xx/xxxx"
         end
     end
 
@@ -52,6 +51,7 @@ class CSVParser
     end
 
     def calc_duration(duration_string)
+        # TODO Error handling
         duration_nums = duration_string.split(":")
         hours_to_seconds = duration_nums[0].to_i * 60 * 60
         minutes_to_seconds = duration_nums[1].to_i * 60
@@ -61,8 +61,11 @@ class CSVParser
 end
 
 
-
-
 # runner
-csv_parser = CSVParser.new
-csv_parser.parse("spec/fixtures/sample-with-broken-utf8.csv")
+if __FILE__==$0
+    csv_parser = CSVParser.new
+    # csv_parser.parse("spec/fixtures/sample-with-broken-utf8.csv")
+    # csv_parser.parse("spec/fixtures/single_line_broken_date.csv")
+    # csv_parser.parse("spec/fixtures/sample.csv")
+    csv_parser.parse(ARGV[0])
+end

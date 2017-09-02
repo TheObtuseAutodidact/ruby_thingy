@@ -14,7 +14,7 @@ describe CSVParser do
 
     it "should log an error if it fails to parse date" do
         p = CSVParser.new
-        expect(p.convert_time("10/?/04 8:44:11 AM")).to eq(nil);
+        expect(p.convert_time("10/?/04 8:44:11 AM")).to eq("xx/xx/xxxx");
 
     end
 
