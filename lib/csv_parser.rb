@@ -4,7 +4,7 @@ require 'csv'
 class CSVParser
 
     def parse(file ="spec/fixtures/single_line.csv" )
-        handle = CSV.foreach(file, {:headers => true, header_converters: :symbol, encoding: 'iso-8859-1:utf-8'})
+        handle = CSV.foreach(file, {:headers => true, header_converters: :symbol}) #, encoding: 'iso-8859-1:utf-8'})
         handle.each do |row|
             puts(row.inspect)
             puts(row[:zip])
@@ -21,6 +21,20 @@ class CSVParser
             # TODO: Log error
             puts("TODO: log (#{e}) to STDERR and do not record row")
         end
+    end
+
+    def format_zip(zip_string)
+        # TODO: validate numericality 
+        if zip_string.length > 5
+            zip_string = zip_string.slice(0..4)
+        else
+            zip_string = zip_string.rjust(5, "0")
+        end
+        zip_string
+    end
+
+    def upcase_name(name_string)
+        name_string.upcase
     end
 end
 

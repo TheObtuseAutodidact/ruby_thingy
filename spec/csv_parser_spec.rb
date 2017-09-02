@@ -23,4 +23,19 @@ describe CSVParser do
         p = CSVParser.new
         expect(p.convert_time()).to eq(nil);
     end
+
+    it "should format zipcode to five digits and pad with '0's as needed" do 
+        p = CSVParser.new
+        expect(p.format_zip("0")).to eq("00000")
+        expect(p.format_zip("123456")).to eq("12345")
+        expect(p.format_zip("12")).to eq("00012")
+        expect(p.format_zip("12345")).to eq("12345")
+    end
+
+    it "should upcase a name string" do
+        p = CSVParser.new
+        expect(p.upcase_name("lenny")).to eq("LENNY")
+        expect(p.upcase_name("株式会社スタジオジブリ")).to eq("株式会社スタジオジブリ")
+    end
+
 end
